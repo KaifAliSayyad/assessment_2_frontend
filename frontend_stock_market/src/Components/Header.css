@@ -24,6 +24,7 @@ nav ul {
     list-style: none;
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
 nav ul li {
@@ -39,4 +40,24 @@ nav ul li a {
 
 nav ul li a:hover {
     text-decoration: underline;
+}
+
+.logout-nav-button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: 2px solid white;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.logout-nav-button:hover {
+    background-color: white;
+    color: #2a3d6f;
 }

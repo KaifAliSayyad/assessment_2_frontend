@@ -1,0 +1,164 @@
+.holdings-container {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.holdings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.holdings-header h1 {
+    font-size: 24px;
+    color: #333;
+    font-weight: 600;
+}
+
+/* Add the budget styles */
+.budget {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.holdings-table-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.holdings-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.holdings-table th,
+.holdings-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.holdings-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+    white-space: nowrap;
+}
+
+.holdings-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.profit-loss {
+    font-weight: 600;
+}
+
+.profit {
+    color: #28a745;
+}
+
+.loss {
+    color: #dc3545;
+}
+
+.sell-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.sell-button:hover {
+    background-color: #c82333;
+}
+
+.loading-spinner {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+.error-message {
+    color: #dc3545;
+    text-align: center;
+    padding: 20px;
+}
+
+.empty-holdings {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.total-label {
+    font-weight: 600;
+    text-align: right;
+}
+
+.holdings-table tfoot tr {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.holdings-table tfoot td {
+    border-top: 2px solid #dee2e6;
+}
+
+@media (max-width: 1200px) {
+    .holdings-table-container {
+        overflow-x: auto;
+    }
+    
+    .holdings-table {
+        min-width: 1000px;
+    }
+}
+
+/* Add these new styles */
+.quantity-input-container {
+    position: relative;
+}
+
+.quantity-input {
+    width: 80px;
+    padding: 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.quantity-input:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+.error-message {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    font-size: 12px;
+    color: #dc3545;
+    white-space: nowrap;
+    background: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+

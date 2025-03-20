@@ -11,6 +11,8 @@ import AdminDashboard from './Screens/StockExchange/AdminDashboard';
 import { Provider } from 'react-redux';
 import store from './ReduxComps/store';
 import AddStock from './Screens/StockExchange/AddStock';
+import Watchlist from './Screens/WatchList/WatchList';
+import Holdings from './Screens/Holdings/Holdings';
 
 function App() {
   return (
@@ -29,6 +31,8 @@ function App() {
                 <Route path="/admin" element={<AdminLogin />} />
                 <Route path="/admin-dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/add-stock" element={<AddStock></AddStock>} />
+                <Route path="/watchlist" element={<Watchlist />} />
+                <Route path="/holding" element={<Holdings />} />
               </Routes>
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { SET_USER, REMOVE_USER, SET_ADMIN } from './actionTypes';
+import { SET_USER, REMOVE_USER, SET_ADMIN, REMOVE_ADMIN } from './actionTypes';
 
 const initialState = {
   user: null,
@@ -21,6 +21,11 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         admin: action.payload
+      };
+    case REMOVE_ADMIN:
+      return {
+        ...state,
+        admin: null
       };
     default:
       return state;

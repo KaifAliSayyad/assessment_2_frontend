@@ -1,4 +1,4 @@
-import { SET_USER, REMOVE_USER, SET_ADMIN } from './actionTypes';
+import { SET_USER, REMOVE_USER, SET_ADMIN, REMOVE_ADMIN } from './actionTypes';
 
 export const setUser = (user) => {
   return {
@@ -17,5 +17,11 @@ export const setAdmin = (admin) => {
   return {
     type: SET_ADMIN,
     payload: admin
+  };
+};
+
+export const removeAdmin = () => {
+  return {
+    type: REMOVE_ADMIN
   };
 };

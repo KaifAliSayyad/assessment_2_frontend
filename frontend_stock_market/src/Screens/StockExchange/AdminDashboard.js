@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import axios from "axios";
 import './AdminDashboard.css';
+import { removeAdmin } from "../../ReduxComps/actions";
 
 function AdminDashboard() {
     const admin = useSelector(state => state.admin);
     const navigate = useNavigate();
 
     const [stocks, setStocks] = useState([]);
+    const dispatch = useDispatch();
 
     const getStocks = async () => {
         // const response = await axios.get('http://localhost:8081/stocks');
@@ -35,8 +37,16 @@ function AdminDashboard() {
         }
     }
 
+    const handleLogOut = () => {
+        dispatch(removeAdmin());
+        navigate('/admin');
+    }
+
     return (
         <div id="admin-dashboard">
+            <div id="logout-button-container">
+                <button id="logout-button" onClick={handleLogOut}>Logout</button>
+            </div>
             <h1 id="dashboard-title">Admin Dashboard</h1>
             <table id="stock-table">
                 <thead>
