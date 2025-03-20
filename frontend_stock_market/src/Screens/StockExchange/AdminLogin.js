@@ -3,10 +3,13 @@ import '../Forms.css';
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setAdmin } from '../../ReduxComps/actions';
 
 function AdminLogin() {
     const [user, setUser] = useState({ "id": "", "password": "" });
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -20,7 +23,11 @@ function AdminLogin() {
         event.preventDefault();
         console.log(user);
         if(user.id === "admin" && user.password === "admin"){
+            dispatch(setAdmin(user));
             navigate('/admin-dashboard');
+        }
+        else{
+            alert("Invalid credentials");
         }
     }
 
