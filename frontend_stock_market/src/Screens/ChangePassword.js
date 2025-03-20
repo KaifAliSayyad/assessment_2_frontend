@@ -14,7 +14,6 @@ function ChangePassword() {
     const navigate = useNavigate();
     const username = useSelector(state => state.user?.username);
 
-    // Add useEffect for authentication check
     useEffect(() => {
         if (!username) {
             navigate('/login');
