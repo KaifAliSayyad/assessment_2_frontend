@@ -1,8 +1,12 @@
-/* Content styles */
+.App {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
 .content {
-  flex: 1;
-  padding: 20px;
-  background-color: #f4f4f4;
+    flex: 1;
+    padding: 20px;
 }
 
 .content h1 {
@@ -36,3 +40,4 @@
 .main-content p {
   font-size: 18px;
 }
+

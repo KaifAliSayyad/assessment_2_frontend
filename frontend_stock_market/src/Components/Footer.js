@@ -1,5 +1,6 @@
 import React from 'react'
 import './Footer.css'
+import { Link } from 'react-router-dom';
 
 function Footer() {
     return (
@@ -7,7 +8,7 @@ function Footer() {
             <div class="footer-content">
                 <p>&copy; 2025 Stock Market. All rights reserved.</p>
                 <div class="social-links">
-                    <a href="/" target="_blank" class="social-icon">www.stockmarket.com</a>
+                    <Link to="/" target="_blank" class="social-icon">www.stockmarket.com</Link>
                 </div>
             </div>
         </footer>
