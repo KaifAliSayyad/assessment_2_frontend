@@ -10,6 +10,7 @@ import AdminLogin from './Screens/StockExchange/AdminLogin';
 import AdminDashboard from './Screens/StockExchange/AdminDashboard';
 import { Provider } from 'react-redux';
 import store from './ReduxComps/store';
+import AddStock from './Screens/StockExchange/AddStock';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/admin" element={<AdminLogin />} />
                 <Route path="/admin-dashboard" element={<AdminDashboard />} />
+                <Route path="/admin/add-stock" element={<AddStock></AddStock>} />
               </Routes>
             </div>
           </div>

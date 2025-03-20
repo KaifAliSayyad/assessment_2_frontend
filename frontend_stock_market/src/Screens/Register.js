@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import './Forms.css';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../ReduxComps/actions';
 
 function Register() {
     const [formData, setFormData] = useState({
@@ -14,6 +16,7 @@ function Register() {
     });
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -66,9 +69,14 @@ function Register() {
                 password: formData.password
             });
 
-            if (response.status === 201) {
+            if (response.status === 200) {
+                dispatch(setUser(response.data));
+                navigate('/watchlist');
+            }
+            else{
                 navigate('/login');
             }
+
         } catch (error) {
             if (error.response) {
                 setErrorMessage(error.response.data.message || "Registration failed. Please try again.");

@@ -1,0 +1,95 @@
+/* Styles specific to the Admin Dashboard component */
+#admin-dashboard {
+    width: 90%;
+    margin: 20px auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Header for the Admin Dashboard */
+#dashboard-title {
+    text-align: center;
+    color: #333;
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+/* Table styles for Admin Dashboard */
+#stock-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#stock-table th, #stock-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+#stock-table th {
+    background-color: #4CAF50;
+    color: white;
+    font-weight: bold;
+}
+
+#stock-table td {
+    background-color: #f9f9f9;
+}
+
+/* Hover effect for table rows */
+#stock-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Button styles for actions within the table */
+#stock-table button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 10px;
+    transition: background-color 0.3s;
+}
+
+#stock-table button:hover {
+    background-color: #45a049;
+}
+
+#stock-table button:focus {
+    outline: none;
+}
+
+/* Add Stock button */
+#add-stock-button {
+    background-color: #007bff;
+    margin-top: 20px;
+    margin-left: auto;
+    display: block;
+    font-size: 16px;
+}
+
+#add-stock-button:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    #stock-table {
+        width: 100%;
+        font-size: 14px;
+    }
+
+    #stock-table th, #stock-table td {
+        padding: 10px;
+    }
+
+    #dashboard-title {
+        font-size: 24px;
+    }
+}
