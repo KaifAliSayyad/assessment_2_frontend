@@ -12,13 +12,13 @@ function ChangePassword() {
     });
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
-    const username = useSelector(state => state.user?.username);
+    const userId = useSelector(state => state.user?.id);
 
     useEffect(() => {
-        if (!username) {
+        if (!userId) {
             navigate('/login');
         }
-    }, [username, navigate]);
+    }, [userId, navigate]);
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -38,9 +38,9 @@ function ChangePassword() {
         }
 
         try {
-            const response = await axios.post(`http://localhost:8080/register/forgotPassword/${username}`, {
-                oldPassword: passwords.oldPassword,
-                newPassword: passwords.newPassword
+            const response = await axios.post(`http://localhost:8080/register/forgotPassword/${userId}`, {
+                old_password: passwords.oldPassword,
+                new_password: passwords.newPassword
             });
 
             if (response.status === 200) {
@@ -52,7 +52,7 @@ function ChangePassword() {
     };
 
     // Don't render the form until we verify the user is authenticated
-    if (!username) {
+    if (!userId) {
         return null;
     }
 
