@@ -55,11 +55,10 @@ function Register() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         setErrorMessage('');
-
         if (!validateForm()) {
             return;
         }
-
+        console.log(formData);
         try {
             const response = await axios.post('http://localhost:8080/register/signup', {
                 name: formData.fullName,

@@ -36,7 +36,7 @@ export default function WatchList() {
     const fetchWatchlist = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://localhost:8080/portfolio/${user.id}/watchlist`);
+            const response = await axios.get(`http://localhost:9999/portfolio/${user.id}/watchlist`);
             setWatchlist(response.data);
             setGeneralError('');
         } catch (err) {
@@ -71,8 +71,8 @@ export default function WatchList() {
     };
 
     const buyApi = async (stock) => {
-        const response = await axios.post(`http://localhost:8080/trading/buy/${stock.id}`, {
-            user_id : user?.id,
+        const response = await axios.post(`http://localhost:9999/trading/buy/${user.id}`, {
+            stockId : stock?.id,
             quantity : buyQuantities[stock.id]
         });
     };

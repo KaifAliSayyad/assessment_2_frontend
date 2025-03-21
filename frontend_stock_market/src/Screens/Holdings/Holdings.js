@@ -51,7 +51,7 @@ export default function Holdings() {
     const [budget, setBudget] = useState(100000); // Add this line for demo budget
     
     const sellApi = async (holding) => {
-        const response = await axios.post(`http://localhost:8080//trading/sell`, {
+        const response = await axios.post(`http://localhost:9999/trading/sell`, {
             user_id : user?.id,
             stock_id : holding.stock.id,
             quantity : sellQuantities[holding.id]

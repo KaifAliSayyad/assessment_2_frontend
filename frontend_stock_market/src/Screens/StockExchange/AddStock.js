@@ -35,7 +35,7 @@ function AddStock() {
             return;
         }
         try {
-            const response = await axios.post('http://localhost:8081/stocks', stock);
+            const response = await axios.post('http://localhost:9999/stocks', stock);
             if (response.status === 200) {
                 alert("Stock added successfully");
                 navigate('/admin-dashboard');
