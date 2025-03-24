@@ -5,15 +5,8 @@ import axios from 'axios';
 import './WatchList.css';
 
 export default function WatchList() {
-    const [watchlist, setWatchlist] = useState([{
-        "id": 1,
-        "name": "Product Name",
-        "quantity": 100,
-        "minPrice": 10.5,
-        "maxPrice": 20,
-        "currentPrice": 20
-    }]);
-    const [budget, setBudget] = useState(100000); // Add this line for demo budget
+    const [watchlist, setWatchlist] = useState([]);
+    const [budget, setBudget] = useState(100000); 
     
     const [loading, setLoading] = useState(true);
     const [errors, setErrors] = useState({}); // Renamed from error to errors
@@ -24,13 +17,13 @@ export default function WatchList() {
     const user = useSelector(state => state.user);
 
     useEffect(() => {
-        setLoading(false);
-        // if(!user){
-        //     navigate('/login');
-        // }
-        // else{
-        //     fetchWatchlist();
-        // }
+        // setLoading(false);
+        if(!user){
+            navigate('/login');
+        }
+        else{
+            fetchWatchlist();
+        }
     }, [user, navigate]);
 
     const fetchWatchlist = async () => {

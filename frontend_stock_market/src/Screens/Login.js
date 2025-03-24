@@ -24,7 +24,7 @@ function Login() {
         setErrorMessage("");
 
         try {
-            const response = await axios.post('http://localhost:8080/register/login', {
+            const response = await axios.post('http://localhost:9999/register/login', {
                 username: user.id,
                 password: user.password
             });
@@ -71,7 +71,7 @@ function Login() {
                             required
                         />
                     </div>
-                    {errorMessage && <p className="error-message">{errorMessage}</p>}
+                    {errorMessage && <p className="form-group error">{errorMessage}</p>}
                     <div className="form-group">
                         <button type="submit">Login</button>
                     </div>

@@ -4,7 +4,6 @@ import axios from 'axios';
 import './Forms.css';
 
 function ForgotPassword() {
-    const [step, setStep] = useState(1); // Step 1: Verify user, Step 2: New password
     const [formData, setFormData] = useState({
         username: '',
         dob: '',
@@ -22,24 +21,6 @@ function ForgotPassword() {
         }));
     };
 
-    const handleVerifyUser = async (event) => {
-        event.preventDefault();
-        setErrorMessage('');
-
-        try {
-            const response = await axios.post('http://localhost:8080/register/verify-user', {
-                username: formData.username,
-                dob: formData.dob
-            });
-
-            if (response.status === 200) {
-                setStep(2); // Move to password reset step
-            }
-        } catch (error) {
-            setErrorMessage(error.response?.data?.message || "Invalid username or date of birth");
-        }
-    };
-
     const handleResetPassword = async (event) => {
         event.preventDefault();
         setErrorMessage('');
@@ -50,11 +31,17 @@ function ForgotPassword() {
         }
 
         try {
-            const response = await axios.post(`http://localhost:8080/register/forgotPassword/${formData.username}`, {
-                newPassword: formData.newPassword
+            const dob = formData.dob; 
+            const dateParts = dob.split("-"); 
+            const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`; 
+
+            const response = await axios.put(`http://localhost:9999/register/forgotPassword/${formData.username}`, {
+                dob: formattedDate,
+                new_password: formData.newPassword
             });
 
             if (response.status === 200) {
+                alert("Password reset successful");
                 navigate('/login');
             }
         } catch (error) {
@@ -66,8 +53,7 @@ function ForgotPassword() {
         <div>
             <div className="login-container">
                 <h2>Forgot Password</h2>
-                {step === 1 ? (
-                    <form onSubmit={handleVerifyUser} className="login-form">
+                    <form onSubmit={handleResetPassword} className="login-form">
                         <div className="form-group">
                             <label htmlFor="username">Username</label>
                             <input
@@ -90,18 +76,11 @@ function ForgotPassword() {
                                 required
                             />
                         </div>
-                        {errorMessage && <p className="error-message">{errorMessage}</p>}
                         <div className="form-group">
-                            <button type="submit">Verify</button>
-                        </div>
-                    </form>
-                ) : (
-                    <form onSubmit={handleResetPassword} className="login-form">
-                        <div className="form-group">
-                            <label htmlFor="new-password">New Password</label>
+                            <label htmlFor="username">New Password</label>
                             <input
                                 type="password"
-                                id="new-password"
+                                id="newPassword"
                                 name="newPassword"
                                 value={formData.newPassword}
                                 onChange={handleInputChange}
@@ -109,22 +88,21 @@ function ForgotPassword() {
                             />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="confirm-password">Confirm Password</label>
+                            <label htmlFor="username">Confirm New Password</label>
                             <input
                                 type="password"
-                                id="confirm-password"
+                                id="confirmPassword"
                                 name="confirmPassword"
                                 value={formData.confirmPassword}
                                 onChange={handleInputChange}
                                 required
                             />
                         </div>
-                        {errorMessage && <p className="error-message">{errorMessage}</p>}
+                        {errorMessage && <p className="form-group error">{errorMessage}</p>}
                         <div className="form-group">
-                            <button type="submit">Reset Password</button>
+                            <button type="submit">Verify</button>
                         </div>
                     </form>
-                )}
             </div>
         </div>
     );

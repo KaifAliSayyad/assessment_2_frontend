@@ -58,22 +58,24 @@ function Register() {
         if (!validateForm()) {
             return;
         }
-        console.log(formData);
         try {
-            const response = await axios.post('http://localhost:8080/register/signup', {
+            let user = {
                 name: formData.fullName,
                 username: formData.username,
                 dob: formData.dob,
                 balance: parseFloat(formData.balance),
                 password: formData.password
-            });
+            };
+            console.log(user);
+            const response = await axios.post('http://localhost:9999/register/signup', user);
 
-            if (response.status === 200) {
+            if (response.status === 201) {
                 dispatch(setUser(response.data));
+                alert("Registration successful!");
                 navigate('/watchlist');
             }
             else{
-                navigate('/login');
+                setErrorMessage("Registration failed. Please try again.");
             }
 
         } catch (error) {
@@ -163,7 +165,7 @@ function Register() {
                             required
                         />
                     </div>
-                    {errorMessage && <div className="error-message">{errorMessage}</div>}
+                    {errorMessage && <div className="form-group error">{errorMessage}</div>}
                     <button type="submit" className="login-button">Register</button><br></br><br></br>
                     <div className="register-link">
                         Already have an account? <Link to="/login">Login here</Link>

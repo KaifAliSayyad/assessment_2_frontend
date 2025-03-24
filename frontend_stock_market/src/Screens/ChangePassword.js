@@ -38,7 +38,7 @@ function ChangePassword() {
         }
 
         try {
-            const response = await axios.post(`http://localhost:8080/register/forgotPassword/${userId}`, {
+            const response = await axios.put(`http://localhost:9999/register/changePassword/${userId}`, {
                 old_password: passwords.oldPassword,
                 new_password: passwords.newPassword
             });
@@ -94,7 +94,7 @@ function ChangePassword() {
                             required
                         />
                     </div>
-                    {errorMessage && <p className="error-message">{errorMessage}</p>}
+                    {errorMessage && <p className="form-group error">{errorMessage}</p>}
                     <div className="form-group">
                         <button type="submit">Change Password</button>
                     </div>
