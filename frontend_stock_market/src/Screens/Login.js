@@ -31,7 +31,7 @@ function Login() {
 
             if (response.status === 200) {
                 dispatch(setUser(response.data));
-                navigate('/watchlist');
+                navigate('/dashboard');
             } else {
                 setErrorMessage("Invalid credentials.");
             }

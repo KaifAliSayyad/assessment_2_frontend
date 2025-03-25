@@ -72,7 +72,7 @@ function Register() {
             if (response.status === 201) {
                 dispatch(setUser(response.data));
                 alert("Registration successful!");
-                navigate('/watchlist');
+                navigate('/dashboard');
             }
             else{
                 setErrorMessage("Registration failed. Please try again.");

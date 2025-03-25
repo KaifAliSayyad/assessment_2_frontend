@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import './Holdings.css';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import DashBar from '../../Components/DashBar';
 
 export default function Holdings() {
     const user = useSelector(state => state.user);
+    const [loading, setLoading] = useState(false);
+    
     const [holdings, setHoldings] = useState([
         {
             id: 1,
@@ -48,13 +52,58 @@ export default function Holdings() {
     ]);
     const [sellQuantities, setSellQuantities] = useState({});
     const [error, setError] = useState({});
-    const [budget, setBudget] = useState(100000); // Add this line for demo budget
+    const [budget, setBudget] = useState(100000);
+    const [value, setValue] = useState(0);
+    const navigate = useNavigate();
+
+    const onLoading = () => {
+        if (!user) {
+            navigate('/login');
+        } else {
+            setLoading(true);
+            const fetchHoldings = async () => {
+                try {
+                    const response = await axios.get(`http://localhost:9999/portfolio/${user?.id}/holdings`);
+                    setHoldings(response.data);
+                } catch (error) {
+                    console.error('Error fetching holdings:', error);
+                } finally {
+                    setLoading(false); 
+                }
+            };
+            const fetchBudget = async () => {
+                try {
+                    const response = await axios.get(`http://localhost:9999/register/balance/${user?.id}`);
+                    setBudget(response.data);
+                } catch (error) {
+                    console.error('Error fetching budget:', error);
+                }
+            };
+            const calculateCurrentValue = async () => {
+                const res = await axios.get("http://localhost:9999/portfolio/"+user.id+"/value");
+                console.log("Res.data",res.data)
+                setValue(res.data);
+            };
+            fetchBudget();
+            fetchHoldings();
+            calculateCurrentValue();
+        }
+    };
     
-    const sellApi = async (holding) => {
-        const response = await axios.post(`http://localhost:9999/trading/sell`, {
-            user_id : user?.id,
-            stock_id : holding.stock.id,
-            quantity : sellQuantities[holding.id]
+    useEffect(() => {
+        onLoading();
+        // const timeoutId = setTimeout(() => {
+        //     onLoading();
+        // }, 10000);
+    
+        // return () => clearTimeout(timeoutId);
+    }, [user]);  
+    
+    
+    const sellApi = async (holding, sellQuantity) => {
+        const response = await axios.post(`http://localhost:9999/trading/sell/${user?.id}`, {
+            stockId : holding.stock.id,
+            quantity : sellQuantity
         });
     };
 
@@ -67,7 +116,14 @@ export default function Holdings() {
                 ...prev,
                 [holdingId]: `Maximum ${holding.purchasedQuantity} shares available to sell`
             }));
-        } else {
+        } 
+        else if (quantity <= 0) {
+            setError(prev => ({
+                ...prev,
+                [holdingId]: 'Please enter a valid quantity to sell'
+            }));
+        }
+        else {
             setError(prev => {
                 const newError = { ...prev };
                 delete newError[holdingId];
@@ -81,41 +137,45 @@ export default function Holdings() {
         }));
     };
 
-    const handleSell = (holding) => {
+    const handleSell = async (holding) => {
         const sellQuantity = sellQuantities[holding.id] || 0;
-        if (sellQuantity <= 0) {
-            setError(prev => ({
-                ...prev,
-                [holding.id]: 'Please enter a valid quantity to sell'
-            }));
+        let confirmSell = window.confirm(`Are you sure you want to sell ${sellQuantity} shares of ${holding.stock.name}?`);
+        if (!confirmSell) {
             return;
         }
-        if (sellQuantity > holding.purchasedQuantity) {
-            return;
-        }
-        sellApi({
-            ...holding,
-            purchasedQuantity: sellQuantity
-        });
-        setHoldings(prev => prev.filter(item => item.id !== holding.id));
+        await sellApi(holding, sellQuantity);
         setSellQuantities(prev => {
             const newQuantities = { ...prev };
             delete newQuantities[holding.id];
             return newQuantities;
         });
+        onLoading();
     };
 
     const calculateProfitLoss = (holding) => {
         return (holding.stock.currentPrice - holding.averageBuyPrice) * holding.purchasedQuantity;
     };
 
+    const calculateTotalInvestment = () => {
+        return holdings.reduce((sum, holding) => 
+            sum + (holding.averageBuyPrice * holding.purchasedQuantity), 0);
+    };
+
+    
+
+    if (loading) {
+        return <div className="loading-spinner">Loading...</div>;
+    }
+
     return (
         <div className="holdings-container">
+            <DashBar 
+                budget={budget}
+                totalInvestment={calculateTotalInvestment()}
+                currentValue={value}
+            />
             <div className="holdings-header">
                 <h1>My Holdings</h1>
-                <div className="budget">
-                    Budget: ₹{budget.toLocaleString()}
-                </div>
             </div>
 
             {holdings.length === 0 ? (
@@ -183,30 +243,12 @@ export default function Holdings() {
                                 );
                             })}
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colSpan="4" className="total-label">Portfolio Totals:</td>
-                                <td>
-                                    {holdings.reduce((sum, holding) => 
-                                        sum + (holding.averageBuyPrice * holding.purchasedQuantity), 0).toFixed(2)}
-                                </td>
-                                <td>
-                                    {holdings.reduce((sum, holding) => 
-                                        sum + (holding.stock.currentPrice * holding.purchasedQuantity), 0).toFixed(2)}
-                                </td>
-                                <td className={`profit-loss ${holdings.reduce((sum, holding) => 
-                                    sum + calculateProfitLoss(holding), 0) >= 0 ? 'profit' : 'loss'}`}>
-                                    {holdings.reduce((sum, holding) => 
-                                        sum + calculateProfitLoss(holding), 0).toFixed(2)}
-                                </td>
-                                <td></td>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
             )}
         </div>
     );
 }
+
 
 
