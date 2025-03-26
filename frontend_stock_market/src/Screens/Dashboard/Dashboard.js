@@ -1,20 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
-import './WatchList.css';
+import { useNavigate } from 'react-router-dom';
 import DashBar from '../../Components/DashBar';
+import '../WatchList/WatchList.css';
 import buyStock from '../../BuyStock';
 
-export default function WatchList() {
-    const [watchlist, setWatchlist] = useState([]);
-    const [budget, setBudget] = useState(100000); 
-    
-    const [loading, setLoading] = useState(true);
+function Dashboard() {
+    const [watchlist, setWatchlist] = useState([
+        {
+            id: 1,
+            name: "TCS",
+            quantity: 100,
+            minPrice: 3000,
+            maxPrice: 4000,
+            currentPrice: 3600
+        },
+        {
+            id: 2,
+            name: "Infosys",
+            quantity: 150,
+            minPrice: 1200,
+            maxPrice: 1800,
+            currentPrice: 1450
+        },
+    ]);
+    const [budget, setBudget] = useState(100000);
+
+    const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({}); // Renamed from error to errors
     const [buyQuantities, setBuyQuantities] = useState({});
-    const [generalError, setGeneralError] = useState(''); // Added for general errors
-    
+
     const navigate = useNavigate();
     const user = useSelector(state => state.user);
 
@@ -31,10 +47,10 @@ export default function WatchList() {
                     console.error('Error fetching budget:', error);
                 }
             };
-            const fetchWatchlist = async () => {
+            const fetchStocks = async () => {
                 try {
                     setLoading(true);
-                    const response = await axios.get(`http://localhost:9999/portfolio/${user.id}/watchlist`);
+                    const response = await axios.get(`http://localhost:9999/stocks`);
                     setWatchlist(response.data);
                 } catch (err) {
                     console.error('Watchlist fetch error:', err);
@@ -43,7 +59,7 @@ export default function WatchList() {
                 }
             };
             fetchBudget();
-            fetchWatchlist();
+            fetchStocks();
         }
     };
 
@@ -54,20 +70,13 @@ export default function WatchList() {
     const handleQuantityChange = (stockId, value) => {
         const quantity = parseInt(value) || 0;
         const stock = watchlist.find(s => s.id === stockId);
-        
+
         if (quantity > stock.quantity) {
             setErrors(prev => ({
                 ...prev,
                 [stockId]: `Maximum ${stock.quantity} shares available to buy`
             }));
-        } 
-        else if(quantity <= 0) {
-            setErrors(prev => ({
-                ...prev,
-                [stockId]: 'Please enter a valid quantity to buy'
-            }));
-        }
-        else {
+        } else {
             setErrors(prev => {
                 const newErrors = { ...prev };
                 delete newErrors[stockId];
@@ -81,6 +90,11 @@ export default function WatchList() {
         }));
     };
 
+    const handleBuy = async (stock) => {
+        await buyStock(stock, buyQuantities[stock.id], user?.id);
+        onLoading();
+    };
+
     const calculateTotalInvestment = () => {
         return 0; // Watchlist doesn't have investments
     };
@@ -89,14 +103,8 @@ export default function WatchList() {
         return 0; // Watchlist doesn't have current value
     };
 
-    const handleRemove = async (stock) => {
-        const response = await axios.delete(`http://localhost:9999/portfolio/${user.id}/watchlist/${stock.id}`);
-        onLoading();
-    };
-
-    const handleBuy = async (stock, quantity, id) => {
-        await buyStock(stock, quantity, id);
-        onLoading();
+    const AddToWatchlist = async (stock) => {
+        const response = await axios.post(`http://localhost:9999/portfolio/${user.id}/watchlist`, stock);
     };
 
     if (loading) {
@@ -105,13 +113,13 @@ export default function WatchList() {
 
     return (
         <div className="watchlist-container">
-            <DashBar 
+            <DashBar
                 budget={budget}
                 totalInvestment={calculateTotalInvestment()}
                 currentValue={calculateCurrentValue()}
             />
             <div className="holdings-header">
-                <h1>My WatchList</h1>
+                <h1>DashBoard</h1>
             </div>
 
             {watchlist.length === 0 ? (
@@ -153,9 +161,9 @@ export default function WatchList() {
                                         </div>
                                     </td>
                                     <td>
-                                        <button 
+                                        <button
                                             className="buy-button"
-                                            onClick={() => handleBuy(stock, buyQuantities[stock.id], user?.id)}
+                                            onClick={() => handleBuy(stock)}
                                             disabled={!buyQuantities[stock.id] || errors[stock.id]}
                                         >
                                             Buy
@@ -164,9 +172,9 @@ export default function WatchList() {
                                     <td>
                                         <button
                                             className="buy-button"
-                                            onClick={() => handleRemove(stock)}
+                                            onClick={() => AddToWatchlist(stock)}
                                         >
-                                            Remove
+                                            Add to Watchlist
                                         </button>
                                     </td>
                                 </tr>
@@ -179,4 +187,4 @@ export default function WatchList() {
     );
 }
 
-
+export default Dashboard; 

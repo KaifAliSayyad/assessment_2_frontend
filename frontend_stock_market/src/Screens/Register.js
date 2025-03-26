@@ -66,26 +66,24 @@ function Register() {
         if (!validateForm()) {
             return;
         }
-        console.log(formData);
         try {
-            const response = await axios.post('http://localhost:9999/register/signup', 
-                {
-                    name: formData.fullName,
-                    username: formData.username,
-                    dob: formData.dob,
-                    balance: formData.balance,
-                    password: formData.password
-                }
-            ).catch((error) => {
-                console.log(error);
-            })  ;
+            let user = {
+                name: formData.fullName,
+                username: formData.username,
+                dob: formData.dob,
+                balance: parseFloat(formData.balance),
+                password: formData.password
+            };
+            console.log(user);
+            const response = await axios.post('http://localhost:9999/register/signup', user);
 
-            if (response.status === 200) {
+            if (response.status === 201) {
                 dispatch(setUser(response.data));
-                navigate('/watchlist');
+                alert("Registration successful!");
+                navigate('/dashboard');
             }
             else{
-                navigate('/login');
+                setErrorMessage("Registration failed. Please try again.");
             }
 
         } catch (error) {

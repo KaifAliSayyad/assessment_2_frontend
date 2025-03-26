@@ -31,7 +31,7 @@ function Login() {
 
             if (response.status === 200) {
                 dispatch(setUser(response.data));
-                navigate('/watchlist');
+                navigate('/dashboard');
             } else {
                 setErrorMessage("Invalid credentials.");
             }
@@ -71,7 +71,7 @@ function Login() {
                             required
                         />
                     </div>
-                    {errorMessage && <p className="error-message">{errorMessage}</p>}
+                    {errorMessage && <p className="form-group error">{errorMessage}</p>}
                     <div className="form-group">
                         <button type="submit">Login</button>
                     </div>

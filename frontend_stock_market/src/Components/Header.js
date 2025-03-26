@@ -23,6 +23,7 @@ function Header() {
             </div>
             <nav>
                 <ul>
+                    <li><Link to="/dashboard">Dashboard</Link></li>
                     <li><Link to="/watchlist">WatchList</Link></li>
                     <li><Link to="/holding">Holding</Link></li>
                     <li><Link to="/register">Register</Link></li>

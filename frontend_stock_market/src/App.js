@@ -13,6 +13,7 @@ import store from './ReduxComps/store';
 import AddStock from './Screens/StockExchange/AddStock';
 import Watchlist from './Screens/WatchList/WatchList';
 import Holdings from './Screens/Holdings/Holdings';
+import Dashboard from './Screens/Dashboard/Dashboard';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
                 <Route path="/admin/add-stock" element={<AddStock></AddStock>} />
                 <Route path="/watchlist" element={<Watchlist />} />
                 <Route path="/holding" element={<Holdings />} />
+                <Route path="/dashboard" element={<Dashboard />} />
               </Routes>
             </div>
           </div>

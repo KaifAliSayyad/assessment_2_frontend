@@ -14,8 +14,8 @@ function AdminDashboard() {
     const dispatch = useDispatch();
 
     const getStocks = async () => {
-        // const response = await axios.get('http://localhost:8081/stocks');
-        // setStocks(response.data);
+        const response = await axios.get('http://localhost:9999/stocks');
+        setStocks(response.data);
     }
 
     useEffect(() => {
@@ -28,8 +28,8 @@ function AdminDashboard() {
     const handleDelete = async (id) => {
         let sure = window.confirm("Are you sure you want to delete this stock?");
         if (!sure) return;
-        const response = await axios.delete(`http://localhost:8081/stocks/${id}`);
-        if (response.status === 200) {
+        const response = await axios.delete(`http://localhost:9999/stocks/${id}`);
+        if (response.status === 204) {
             alert("Stock deleted successfully");
         }
         else {
@@ -62,34 +62,22 @@ function AdminDashboard() {
                     </tr>
                 </thead>
                 <tbody>
-                    {/* {stocks.map((stock) => (
-                <tr key={stock.id}>
-                    <td>{stock.id}</td>
-                    <td>{stock.name}</td>
-                    <td>{stock.currentPrice}</td>
-                    <td>{stock.quantity}</td>
-                    <td>{stock.minPrice}</td>
-                    <td>{stock.maxPrice}</td>
-                    <td>
-                        <button onClick={() => handleDelete(stock.id)}>Delete</button>
-                        <button>Update</button>
-                    </td>
-                </tr>
-            ))} */}
-                    <tr id="stock-row-1">
-                        <td id="stock-id-1">1</td>
-                        <td id="stock-name-1">Apple</td>
-                        <td id="stock-price-1">100</td>
-                        <td id="stock-quantity-1">1000</td>
-                        <td id="stock-min-price-1">50</td>
-                        <td id="stock-max-price-1">150</td>
-                        <td id="actions-1">
-                            <button id="delete-button-1" onClick={() => handleDelete(1)}>Delete</button>
-                        </td>
-                        <td id="actions-1">
-                            <button id="update-button-1">Update</button>
-                        </td>
-                    </tr>
+                    {stocks.map((stock) => (
+                        <tr key={stock.id}>
+                            <td>{stock.id}</td>
+                            <td>{stock.name}</td>
+                            <td>{stock.currentPrice}</td>
+                            <td>{stock.quantity}</td>
+                            <td>{stock.minPrice}</td>
+                            <td>{stock.maxPrice}</td>
+                            <td id="actions-1">
+                                <button onClick={() => handleDelete(stock.id)}>Delete</button>
+                            </td>
+                            <td id="actions-1">
+                                <button id="update-button-1">Update</button>
+                            </td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
 
