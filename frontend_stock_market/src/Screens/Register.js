@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import './Forms.css';
@@ -17,6 +17,14 @@ function Register() {
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        axios.get("http://localhost:9999/register/users").then((response) => {
+            console.log(response.data);
+        }).catch((error) => {
+            console.log(error);
+        });
+    }, []);
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -60,13 +68,17 @@ function Register() {
         }
         console.log(formData);
         try {
-            const response = await axios.post('http://localhost:8080/register/signup', {
-                name: formData.fullName,
-                username: formData.username,
-                dob: formData.dob,
-                balance: parseFloat(formData.balance),
-                password: formData.password
-            });
+            const response = await axios.post('http://localhost:9999/register/signup', 
+                {
+                    name: formData.fullName,
+                    username: formData.username,
+                    dob: formData.dob,
+                    balance: formData.balance,
+                    password: formData.password
+                }
+            ).catch((error) => {
+                console.log(error);
+            })  ;
 
             if (response.status === 200) {
                 dispatch(setUser(response.data));
@@ -163,7 +175,7 @@ function Register() {
                             required
                         />
                     </div>
-                    {errorMessage && <div className="error-message">{errorMessage}</div>}
+                    {errorMessage && <div className="form-group error">{errorMessage}</div>}
                     <button type="submit" className="login-button">Register</button><br></br><br></br>
                     <div className="register-link">
                         Already have an account? <Link to="/login">Login here</Link>
