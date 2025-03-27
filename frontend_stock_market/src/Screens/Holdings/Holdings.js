@@ -7,68 +7,25 @@ import DashBar from '../../Components/DashBar';
 
 export default function Holdings() {
     const user = useSelector(state => state.user);
-    const [loading, setLoading] = useState(false);
     
-    const [holdings, setHoldings] = useState([
-        {
-            id: 1,
-            stock: {
-                id: 1,
-                name: "TCS",
-                quantity: 100,
-                minPrice: 3000,
-                maxPrice: 4000,
-                currentPrice: 3600
-            },
-            averageBuyPrice: 3500,
-            purchasedQuantity: 10
-        },
-        {
-            id: 2,
-            stock: {
-                id: 2,
-                name: "Infosys",
-                quantity: 150,
-                minPrice: 1200,
-                maxPrice: 1800,
-                currentPrice: 1450
-            },
-            averageBuyPrice: 1500,
-            purchasedQuantity: 15
-        },
-        {
-            id: 3,
-            stock: {
-                id: 3,
-                name: "HDFC Bank",
-                quantity: 200,
-                minPrice: 1400,
-                maxPrice: 1900,
-                currentPrice: 1650
-            },
-            averageBuyPrice: 1600,
-            purchasedQuantity: 20
-        }
-    ]);
+    const [holdings, setHoldings] = useState([]);
     const [sellQuantities, setSellQuantities] = useState({});
     const [error, setError] = useState({});
     const [budget, setBudget] = useState(100000);
     const [value, setValue] = useState(0);
+    const [totalInvestment, setTotalInvestment] = useState(0);
     const navigate = useNavigate();
 
     const onLoading = () => {
         if (!user) {
             navigate('/login');
         } else {
-            setLoading(true);
             const fetchHoldings = async () => {
                 try {
                     const response = await axios.get(`http://localhost:9999/portfolio/${user?.id}/holdings`);
                     setHoldings(response.data);
                 } catch (error) {
                     console.error('Error fetching holdings:', error);
-                } finally {
-                    setLoading(false); 
                 }
             };
             const fetchBudget = async () => {
@@ -81,9 +38,9 @@ export default function Holdings() {
             };
             const calculateCurrentValue = async () => {
                 const res = await axios.get("http://localhost:9999/portfolio/"+user.id+"/value");
-                console.log("Res.data",res.data)
                 setValue(res.data);
             };
+            calculateTotalInvestment();
             fetchBudget();
             fetchHoldings();
             calculateCurrentValue();
@@ -92,12 +49,7 @@ export default function Holdings() {
     
     useEffect(() => {
         onLoading();
-        // const timeoutId = setTimeout(() => {
-        //     onLoading();
-        // }, 10000);
-    
-        // return () => clearTimeout(timeoutId);
-    }, [user]);  
+    }, [user, holdings, value]);  
     
     
     const sellApi = async (holding, sellQuantity) => {
@@ -157,21 +109,15 @@ export default function Holdings() {
     };
 
     const calculateTotalInvestment = () => {
-        return holdings.reduce((sum, holding) => 
-            sum + (holding.averageBuyPrice * holding.purchasedQuantity), 0);
-    };
-
-    
-
-    if (loading) {
-        return <div className="loading-spinner">Loading...</div>;
-    }
+        setTotalInvestment(holdings.reduce((sum, holding) => 
+            sum + (holding.averageBuyPrice * holding.purchasedQuantity), 0));
+    };    
 
     return (
         <div className="holdings-container">
             <DashBar 
                 budget={budget}
-                totalInvestment={calculateTotalInvestment()}
+                totalInvestment={totalInvestment}
                 currentValue={value}
             />
             <div className="holdings-header">

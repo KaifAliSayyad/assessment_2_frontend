@@ -7,27 +7,11 @@ import '../WatchList/WatchList.css';
 import buyStock from '../../BuyStock';
 
 function Dashboard() {
-    const [watchlist, setWatchlist] = useState([
-        {
-            id: 1,
-            name: "TCS",
-            quantity: 100,
-            minPrice: 3000,
-            maxPrice: 4000,
-            currentPrice: 3600
-        },
-        {
-            id: 2,
-            name: "Infosys",
-            quantity: 150,
-            minPrice: 1200,
-            maxPrice: 1800,
-            currentPrice: 1450
-        },
-    ]);
+    const [watchlist, setWatchlist] = useState([]);
     const [budget, setBudget] = useState(100000);
+    const [totalInvestment, setTotalInvestment] = useState(0);
+    const [currentValue, setCurrentValue] = useState(0);
 
-    const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({}); // Renamed from error to errors
     const [buyQuantities, setBuyQuantities] = useState({});
 
@@ -38,7 +22,6 @@ function Dashboard() {
         if (!user) {
             navigate('/login');
         } else {
-            setLoading(true);
             const fetchBudget = async () => {
                 try {
                     const response = await axios.get(`http://localhost:9999/register/balance/${user?.id}`);
@@ -49,13 +32,10 @@ function Dashboard() {
             };
             const fetchStocks = async () => {
                 try {
-                    setLoading(true);
                     const response = await axios.get(`http://localhost:9999/stocks`);
                     setWatchlist(response.data);
                 } catch (err) {
                     console.error('Watchlist fetch error:', err);
-                } finally {
-                    setLoading(false);
                 }
             };
             fetchBudget();
@@ -65,7 +45,7 @@ function Dashboard() {
 
     useEffect(() => {
         onLoading();
-    }, [user, navigate]);
+    }, [user, navigate, watchlist]);
 
     const handleQuantityChange = (stockId, value) => {
         const quantity = parseInt(value) || 0;
@@ -96,27 +76,31 @@ function Dashboard() {
     };
 
     const calculateTotalInvestment = () => {
-        return 0; // Watchlist doesn't have investments
+        return totalInvestment; // Watchlist doesn't have investments
     };
 
     const calculateCurrentValue = () => {
-        return 0; // Watchlist doesn't have current value
+        return currentValue; // Watchlist doesn't have current value
     };
 
     const AddToWatchlist = async (stock) => {
-        const response = await axios.post(`http://localhost:9999/portfolio/${user.id}/watchlist`, stock);
+        try{
+            const response = await axios.post(`http://localhost:9999/portfolio/${user.id}/watchlist`, stock);
+            if(response.status === 200){
+                alert("Stock added to watchlist successfully");
+            }
+        }
+        catch(err){
+            console.log(err);
+        }
     };
-
-    if (loading) {
-        return <div className="loading-spinner">Loading...</div>;
-    }
 
     return (
         <div className="watchlist-container">
             <DashBar
                 budget={budget}
-                totalInvestment={calculateTotalInvestment()}
-                currentValue={calculateCurrentValue()}
+                totalInvestment={totalInvestment}
+                currentValue={currentValue}
             />
             <div className="holdings-header">
                 <h1>DashBoard</h1>

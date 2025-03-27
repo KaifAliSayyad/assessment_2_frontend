@@ -30,10 +30,6 @@ function AddStock() {
             alert("Minimum price should be less than maximum price");
             return;
         }
-        if(stock.currentPrice < stock.minPrice || stock.currentPrice > stock.maxPrice){
-            alert("Stock price should be between min and max price");
-            return;
-        }
         try {
             const response = await axios.post('http://localhost:9999/stocks', stock);
             if (response.status === 200) {
