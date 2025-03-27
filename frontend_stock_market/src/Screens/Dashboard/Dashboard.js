@@ -38,8 +38,13 @@ function Dashboard() {
                     console.error('Watchlist fetch error:', err);
                 }
             };
+            const calculateCurrentValue = async () => {
+                const res = await axios.get("http://localhost:9999/portfolio/"+user.id+"/value");
+                setCurrentValue(res.data);
+            };
             fetchBudget();
             fetchStocks();
+            calculateCurrentValue();
         }
     };
 
@@ -79,9 +84,7 @@ function Dashboard() {
         return totalInvestment; // Watchlist doesn't have investments
     };
 
-    const calculateCurrentValue = () => {
-        return currentValue; // Watchlist doesn't have current value
-    };
+    
 
     const AddToWatchlist = async (stock) => {
         try{

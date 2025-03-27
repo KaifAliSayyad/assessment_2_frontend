@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "start": "concurrently \"npm run start:client\" \"npm run start:server\"",
+    "start:client": "cd charts && ng serve",
+    "start:server": "cd frontend_stock_market && npm run start"
+  },
+  "dependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
