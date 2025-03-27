@@ -9,11 +9,11 @@ import buyStock from '../../BuyStock';
 export default function WatchList() {
     const [watchlist, setWatchlist] = useState([]);
     const [budget, setBudget] = useState(100000); 
+    const [totalInvestment, setTotalInvestment] = useState(0);
+    const [currentValue, setCurrentValue] = useState(0);
     
-    const [loading, setLoading] = useState(true);
     const [errors, setErrors] = useState({}); // Renamed from error to errors
     const [buyQuantities, setBuyQuantities] = useState({});
-    const [generalError, setGeneralError] = useState(''); // Added for general errors
     
     const navigate = useNavigate();
     const user = useSelector(state => state.user);
@@ -22,7 +22,6 @@ export default function WatchList() {
         if (!user) {
             navigate('/login');
         } else {
-            setLoading(true);
             const fetchBudget = async () => {
                 try {
                     const response = await axios.get(`http://localhost:9999/register/balance/${user?.id}`);
@@ -33,15 +32,14 @@ export default function WatchList() {
             };
             const fetchWatchlist = async () => {
                 try {
-                    setLoading(true);
                     const response = await axios.get(`http://localhost:9999/portfolio/${user.id}/watchlist`);
                     setWatchlist(response.data);
                 } catch (err) {
                     console.error('Watchlist fetch error:', err);
-                } finally {
-                    setLoading(false);
-                }
+                } 
             };
+            setTotalInvestment(calculateTotalInvestment());
+            setCurrentValue(calculateCurrentValue());
             fetchBudget();
             fetchWatchlist();
         }
@@ -49,7 +47,7 @@ export default function WatchList() {
 
     useEffect(() => {
         onLoading();
-    }, [user, navigate]);
+    }, [user, navigate, watchlist]);
 
     const handleQuantityChange = (stockId, value) => {
         const quantity = parseInt(value) || 0;
@@ -82,7 +80,7 @@ export default function WatchList() {
     };
 
     const calculateTotalInvestment = () => {
-        return 0; // Watchlist doesn't have investments
+        return totalInvestment; // Watchlist doesn't have investments
     };
 
     const calculateCurrentValue = () => {
@@ -99,16 +97,12 @@ export default function WatchList() {
         onLoading();
     };
 
-    if (loading) {
-        return <div className="loading-spinner">Loading...</div>;
-    }
-
     return (
         <div className="watchlist-container">
             <DashBar 
                 budget={budget}
-                totalInvestment={calculateTotalInvestment()}
-                currentValue={calculateCurrentValue()}
+                totalInvestment={totalInvestment}
+                currentValue={currentValue}
             />
             <div className="holdings-header">
                 <h1>My WatchList</h1>
