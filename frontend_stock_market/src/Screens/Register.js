@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import './Forms.css';
@@ -17,6 +17,14 @@ function Register() {
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        axios.get("http://localhost:9999/register/users").then((response) => {
+            console.log(response.data);
+        }).catch((error) => {
+            console.log(error);
+        });
+    }, []);
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
