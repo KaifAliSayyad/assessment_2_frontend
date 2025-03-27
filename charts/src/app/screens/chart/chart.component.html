@@ -1,16 +1,16 @@
 <div class="chart-content">
     <div class="header">
-      <h3>Charts</h3>
+      <h3>Charts for {{ name }}</h3>
     </div>
     <div class="body">
       <div class="timeframe-filter">
         <label for="timeframe">Timeframe:</label>
         <select id="timeframe" (change)="changeTimeframe($event)">
-          <option value="year">Year</option>
-          <option value="month">Month</option>
-          <option value="day">Day</option>
-          <option value="hour">Hour</option>
           <option value="minute">Minute</option>
+          <option value="hour">Hour</option>
+          <option value="day">Day</option>
+          <option value="month">Month</option>
+          <option value="year">Year</option>
         </select>
       </div>
       <div echarts [options]="lineChartOptions" class="chart"></div>

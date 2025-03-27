@@ -1,99 +1,3 @@
-// import { Component, OnInit } from '@angular/core';
-// import { ActivatedRoute } from '@angular/router';
-// import { HttpClient, HttpClientModule } from '@angular/common/http';
-// import { NgxEchartsModule, NGX_ECHARTS_CONFIG } from 'ngx-echarts';
-// import { HistoryService } from '../../services/history.service';
-// import { History } from '../../interfaces/history';
-// import { CommonModule } from '@angular/common';
-
-// @Component({
-//   selector: 'app-chart',
-//   standalone: true,
-//   imports: [NgxEchartsModule, CommonModule, HttpClientModule],
-//   templateUrl: './chart.component.html',
-//   styleUrls: ['./chart.component.css'],
-//   providers: [
-//     {
-//       provide: NGX_ECHARTS_CONFIG,
-//       useFactory: () => ({ echarts: () => import('echarts') }),
-//     },
-//   ],
-// })
-// export class ChartComponent implements OnInit {
-//   lineChartOptions: any;
-//   candlestickChartOptions: any;
-
-//   constructor(
-//     private route: ActivatedRoute,
-//     private http: HttpClient,
-//     private historyService: HistoryService
-//   ) {}
-
-//   ngOnInit() {
-//     const stockId = this.route.snapshot.paramMap.get('stock_id');
-//     if (stockId) {
-//       this.fetchHistory(stockId);
-//     }
-//   }
-
-//   fetchHistory(stockId: string) {
-//     this.http.get<History>(`http://localhost:9999/history/${stockId}`).subscribe({
-//       next: (data) => {
-  
-//         this.historyService.setHistory(data);
-//         if (data.history) {
-//           this.prepareCharts(data.history);
-//         }
-//       },
-//       error: (error) => console.error('Error fetching history:', error),
-//     });
-//   }
-
-//   prepareCharts(historyData: Record<string, number>) {
-//     const dates = Object.keys(historyData);
-//     const prices = Object.values(historyData);
-
-//     // Line Chart Configuration
-//     this.lineChartOptions = {
-//       xAxis: {
-//         type: 'category',
-//         data: dates,
-//       },
-//       yAxis: {
-//         type: 'value',
-//       },
-//       series: [
-//         {
-//           data: prices,
-//           type: 'line',
-//         },
-//       ],
-//     };
-
-//     // Candlestick Chart Configuration
-//     this.candlestickChartOptions = {
-//       xAxis: {
-//         type: 'category',
-//         data: dates,
-//       },
-//       yAxis: {
-//         type: 'value',
-//       },
-//       series: [
-//         {
-//           type: 'candlestick',
-//           data: this.formatCandlestickData(prices),
-//         },
-//       ],
-//     };
-//   }
-
-//   formatCandlestickData(prices: number[]): number[][] {
-//     // Placeholder: Convert prices to candlestick format [open, close, low, high]
-//     return prices.map((price) => [price, price, price, price]);
-//   }
-// }
-
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -122,10 +26,15 @@ export class ChartComponent implements OnInit {
   candlestickChartOptions: any;
 
   // Allow selection of different timeframes.
-  selectedTimeframe: Timeframe = 'hour';
+  selectedTimeframe: Timeframe = 'minute';
 
   // Raw history data from the API.
   rawHistoryData: Record<string, number> = {};
+  minPrice: number = 0;
+  maxPrice: number = 100;
+  name: string = 'Unknown';
+  low: number = 0;
+  high: number = 100;
 
   constructor(
     private route: ActivatedRoute,
@@ -146,6 +55,9 @@ export class ChartComponent implements OnInit {
         this.historyService.setHistory(data);
         if (data.history) {
           this.rawHistoryData = data.history;
+          this.minPrice = data.minPrice;
+          this.maxPrice = data.maxPrice;
+          this.name = data.name;
           this.prepareCharts(this.rawHistoryData, this.selectedTimeframe);
         }
       },
@@ -237,101 +149,23 @@ export class ChartComponent implements OnInit {
       const close = prices[prices.length - 1];
       const high = Math.max(...prices);
       const low = Math.min(...prices);
+      this.high = high;
+      this.low = low;
       candlestickData.push([open, close, low, high]);
     });
 
     return { dates, linePrices, candlestickData };
   }
 
-  // prepareCharts(historyData: Record<string, number>, timeframe: Timeframe): void {
-  //   const { dates, linePrices, candlestickData } = this.groupData(historyData, timeframe);
-
-  //   // Configure the line chart with data zoom enabled.
-  //   this.lineChartOptions = {
-  //     title: {
-  //       text: `Stock Price (Line Chart) - Grouped by ${timeframe}`,
-  //     },
-  //     tooltip: {
-  //       trigger: 'axis',
-  //     },
-  //     dataZoom: [
-  //       {
-  //         type: 'inside',
-  //         xAxisIndex: [0],
-  //         start: 0,
-  //         end: 100,
-  //       },
-  //       {
-  //         type: 'slider',
-  //         xAxisIndex: [0],
-  //         start: 0,
-  //         end: 100,
-  //       },
-  //     ],
-  //     xAxis: {
-  //       type: 'category',
-  //       data: dates,
-  //     },
-  //     yAxis: {
-  //       type: 'value',
-  //     },
-  //     series: [
-  //       {
-  //         data: linePrices,
-  //         type: 'line',
-  //         smooth: true,
-  //       },
-  //     ],
-  //   };
-
-  //   // Configure the candlestick chart with data zoom enabled.
-  //   this.candlestickChartOptions = {
-  //     title: {
-  //       text: `Stock Candlestick Chart - Grouped by ${timeframe}`,
-  //     },
-  //     tooltip: {
-  //       trigger: 'axis',
-  //     },
-  //     dataZoom: [
-  //       {
-  //         type: 'inside',
-  //         xAxisIndex: [0],
-  //         start: 0,
-  //         end: 100,
-  //       },
-  //       {
-  //         type: 'slider',
-  //         xAxisIndex: [0],
-  //         start: 0,
-  //         end: 100,
-  //       },
-  //     ],
-  //     xAxis: {
-  //       type: 'category',
-  //       data: dates,
-  //       boundaryGap: true,
-  //     },
-  //     yAxis: {
-  //       type: 'value',
-  //     },
-  //     series: [
-  //       {
-  //         type: 'candlestick',
-  //         data: candlestickData,
-  //         itemStyle: {
-  //           color: '#0CF49B',
-  //           color0: '#FD1050',
-  //           borderColor: '#0CF49B',
-  //           borderColor0: '#FD1050',
-  //         },
-  //       },
-  //     ],
-  //   };
-  // }
   prepareCharts(historyData: Record<string, number>, timeframe: Timeframe): void {
     const { dates, linePrices, candlestickData } = this.groupData(historyData, timeframe);
+    
+    // Calculate the zoom start and end percentages based on high and low values for y-axis
+    const totalRange = this.maxPrice - this.minPrice;
+    const yZoomStart = ((this.low - 1 - this.minPrice) / totalRange) * 100;
+    const yZoomEnd = ((this.high + 1 - this.minPrice) / totalRange) * 100;
   
-    // Configure the line chart with data zoom enabled and adjusted yAxis settings.
+    // Configure the line chart
     this.lineChartOptions = {
       title: {
         text: `Stock Price (Line Chart) - Grouped by ${timeframe}`,
@@ -343,15 +177,26 @@ export class ChartComponent implements OnInit {
         {
           type: 'inside',
           xAxisIndex: [0],
-          start: 0,
-          end: 100,
+        },
+        {
+          type: 'inside',
+          yAxisIndex: [0],
+          start: yZoomStart,
+          end: yZoomEnd,
         },
         {
           type: 'slider',
           xAxisIndex: [0],
-          start: 0,
-          end: 100,
+          bottom: '2%',
         },
+        {
+          type: 'slider',
+          yAxisIndex: [0],
+          start: yZoomStart,
+          end: yZoomEnd,
+          right: '2%',
+          orient: 'vertical',
+        }
       ],
       xAxis: {
         type: 'category',
@@ -359,9 +204,10 @@ export class ChartComponent implements OnInit {
       },
       yAxis: {
         type: 'value',
-        // Adjust the minInterval or splitNumber to reduce the gap on the y-axis.
-        minInterval: 0.01, // Set to a smaller value to better match your data precision.
-        splitNumber: 5,    // Adjust number of splits if needed.
+        minInterval: 0.01,
+        splitNumber: 5,
+        min: this.minPrice,
+        max: this.maxPrice,
       },
       series: [
         {
@@ -372,7 +218,7 @@ export class ChartComponent implements OnInit {
       ],
     };
   
-    // Configure the candlestick chart with data zoom enabled and adjusted yAxis settings.
+    // Configure the candlestick chart
     this.candlestickChartOptions = {
       title: {
         text: `Stock Candlestick Chart - Grouped by ${timeframe}`,
@@ -384,15 +230,26 @@ export class ChartComponent implements OnInit {
         {
           type: 'inside',
           xAxisIndex: [0],
-          start: 0,
-          end: 100,
+        },
+        {
+          type: 'inside',
+          yAxisIndex: [0],
+          start: yZoomStart,
+          end: yZoomEnd,
         },
         {
           type: 'slider',
           xAxisIndex: [0],
-          start: 0,
-          end: 100,
+          bottom: '2%',
         },
+        {
+          type: 'slider',
+          yAxisIndex: [0],
+          start: yZoomStart,
+          end: yZoomEnd,
+          right: '2%',
+          orient: 'vertical',
+        }
       ],
       xAxis: {
         type: 'category',
@@ -403,9 +260,8 @@ export class ChartComponent implements OnInit {
         type: 'value',
         minInterval: 0.01,
         splitNumber: 5,
-        // You can also set min and max if you know the range of your data.
-        min: 11,
-        max: 14,
+        min: this.minPrice,
+        max: this.maxPrice,
       },
       series: [
         {
