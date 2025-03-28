@@ -1,12 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { NgxEchartsModule, NGX_ECHARTS_CONFIG } from 'ngx-echarts';
 import { HistoryService } from '../../services/history.service';
 import { History } from '../../interfaces/history';
 import { CommonModule } from '@angular/common';
+import SockJS from 'sockjs-client';
+import { Client, IMessage, IStompSocket } from '@stomp/stompjs';
 
 type Timeframe = 'year' | 'month' | 'day' | 'hour' | 'minute';
+
+// Add this interface to match your HistoryDTO structure
+interface HistoryUpdate {
+  stockId: number;
+  date: Date;
+  price: number;
+}
 
 @Component({
   selector: 'app-chart',
@@ -21,14 +30,13 @@ type Timeframe = 'year' | 'month' | 'day' | 'hour' | 'minute';
     },
   ],
 })
-export class ChartComponent implements OnInit {
+export class ChartComponent implements OnInit, OnDestroy {
+  private stompClient: Client;
+  private stockId: string | null = null;
+  
   lineChartOptions: any;
   candlestickChartOptions: any;
-
-  // Allow selection of different timeframes.
   selectedTimeframe: Timeframe = 'minute';
-
-  // Raw history data from the API.
   rawHistoryData: Record<string, number> = {};
   minPrice: number = 0;
   maxPrice: number = 100;
@@ -40,13 +48,64 @@ export class ChartComponent implements OnInit {
     private route: ActivatedRoute,
     private http: HttpClient,
     private historyService: HistoryService
-  ) {}
+  ) {
+    this.stompClient = new Client();
+  }
 
   ngOnInit(): void {
-    const stockId = this.route.snapshot.paramMap.get('stock_id');
-    if (stockId) {
-      this.fetchHistory(stockId);
+    this.stockId = this.route.snapshot.paramMap.get('stock_id');
+    if (this.stockId) {
+      this.fetchHistory(this.stockId);
+      this.initializeWebSocket();
     }
+  }
+
+  ngOnDestroy(): void {
+    if (this.stompClient.connected) {
+      this.stompClient.deactivate();
+    }
+  }
+
+  private initializeWebSocket(): void {
+    this.stompClient.webSocketFactory = () => {
+      return new SockJS('http://localhost:8084/ws-stocks') as unknown as IStompSocket;
+    };
+
+    this.stompClient.onConnect = (frame) => {
+      console.log('WebSocket Connected');
+
+      // Subscribe to general stock updates
+      this.stompClient.subscribe('/topic/stock-updates', (message: IMessage) => {
+        const update = JSON.parse(message.body);
+        console.log('Received stock update:', update);
+        // Handle general stock updates if needed
+      });
+
+      // Subscribe to specific stock history updates
+      if (this.stockId) {
+        this.stompClient.subscribe(`/topic/history/${this.stockId}`, (message: IMessage) => {
+          const historyUpdate = JSON.parse(message.body);
+          console.log('Received history update:', historyUpdate);
+          
+          // Update the component's data with new history
+          if (historyUpdate.history) {
+            this.rawHistoryData = historyUpdate.history;
+            this.minPrice = historyUpdate.minPrice;
+            this.maxPrice = historyUpdate.maxPrice;
+            this.name = historyUpdate.name;
+            // Refresh the charts with new data
+            this.prepareCharts(this.rawHistoryData, this.selectedTimeframe);
+          }
+        });
+      }
+    };
+
+    this.stompClient.onStompError = (frame) => {
+      console.error('WebSocket connection error:', frame);
+    };
+
+    // Activate the client
+    this.stompClient.activate();
   }
 
   fetchHistory(stockId: string): void {
@@ -277,5 +336,31 @@ export class ChartComponent implements OnInit {
       ],
     };
   }
-  
+
+  sendHistoryUpdate(price: number): void {
+    if (!this.stockId) {
+      console.error('No stock ID available');
+      return;
+    }
+
+    if (!this.stompClient.connected) {
+      console.error('WebSocket not connected');
+      return;
+    }
+
+    const historyUpdate: HistoryUpdate = {
+      stockId: parseInt(this.stockId),
+      date: new Date(),
+      price: price
+    };
+
+    try {
+      this.stompClient.publish({
+        destination: '/app/update-history',
+        body: JSON.stringify(historyUpdate)
+      });
+    } catch (error) {
+      console.error('Failed to send history update:', error);
+    }
+  }
 }
