@@ -9,7 +9,10 @@ export class HistoryService {
   history: History = {
     id:  0,
     stockId: 0,
-    history: {}
+    history: {},
+    minPrice: 0,
+    maxPrice: 100,
+    name: 'Unknown'
   };
 
   constructor() { }
@@ -26,7 +29,10 @@ export class HistoryService {
     this.history = {
       id:  0,
       stockId: 0,
-      history: {}
+      history: {},
+      minPrice: 0,
+      maxPrice: 100,
+      name: 'Unknown'
     }
   }
 
