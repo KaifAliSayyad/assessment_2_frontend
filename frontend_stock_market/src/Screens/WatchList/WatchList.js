@@ -38,10 +38,28 @@ export default function WatchList() {
                     console.error('Watchlist fetch error:', err);
                 } 
             };
-            setTotalInvestment(calculateTotalInvestment());
-            setCurrentValue(calculateCurrentValue());
+            const calculateCurrentValue = async () => {
+                try{
+                    const res = await axios.get("http://localhost:9999/portfolio/"+user.id+"/value");
+                    setCurrentValue(res.data);
+                }
+                catch(e){
+                    console.log(e);
+                }
+            };
+            const calculateTotalInvestment = async () => {
+                try{
+                    const res = await axios.get("http://localhost:9999/portfolio/"+user.id+"/investment");
+                    setTotalInvestment(res.data);
+                }
+                catch(e){
+                    console.log(e);
+                }
+            };
             fetchBudget();
             fetchWatchlist();
+            calculateTotalInvestment();
+            calculateCurrentValue();
         }
     };
 
@@ -77,14 +95,6 @@ export default function WatchList() {
             ...prev,
             [stockId]: quantity
         }));
-    };
-
-    const calculateTotalInvestment = () => {
-        return totalInvestment; // Watchlist doesn't have investments
-    };
-
-    const calculateCurrentValue = () => {
-        return 0; // Watchlist doesn't have current value
     };
 
     const handleRemove = async (stock) => {
@@ -128,7 +138,7 @@ export default function WatchList() {
                         <tbody>
                             {watchlist.map(stock => (
                                 <tr key={stock.id}>
-                                    <td>{stock.name}</td>
+                                    <td className="stock-table-body" onClick={(e) => {navigate(`/stocks/${stock.id}`)}}>{stock.name}</td>
                                     <td>{stock.currentPrice.toFixed(2)}</td>
                                     <td>{stock.quantity}</td>
                                     <td>

@@ -41,3 +41,13 @@
   font-size: 18px;
 }
 
+.stock-table-body {
+  cursor: pointer;
+  text-decoration: underline;
+  color: blue;
+  font-weight: bold;  
+}
+
+.stock-table-body:hover {
+  color: darkblue;
+}

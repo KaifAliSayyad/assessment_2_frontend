@@ -37,13 +37,27 @@ export default function Holdings() {
                 }
             };
             const calculateCurrentValue = async () => {
-                const res = await axios.get("http://localhost:9999/portfolio/"+user.id+"/value");
-                setValue(res.data);
+                try{
+                    const res = await axios.get("http://localhost:9999/portfolio/"+user.id+"/value");
+                    setValue(res.data);
+                }
+                catch(e){
+                    console.log(e);
+                }
             };
-            calculateTotalInvestment();
+            const calculateTotalInvestment = async () => {
+                try{
+                    const res = await axios.get("http://localhost:9999/portfolio/"+user.id+"/investment");
+                    setTotalInvestment(res.data);
+                }
+                catch(e){
+                    console.log(e);
+                }
+            };
             fetchBudget();
             fetchHoldings();
             calculateCurrentValue();
+            calculateTotalInvestment();
         }
     };
     
@@ -53,10 +67,18 @@ export default function Holdings() {
     
     
     const sellApi = async (holding, sellQuantity) => {
-        const response = await axios.post(`http://localhost:9999/trading/sell/${user?.id}`, {
-            stockId : holding.stock.id,
-            quantity : sellQuantity
-        });
+        try{
+            const response = await axios.post(`http://localhost:9999/trading/sell/${user?.id}`, {
+                stockId : holding.stock.id,
+                quantity : sellQuantity
+            });
+            if(response.status === 200){
+                alert("Stock sold successfully");
+            }
+        }
+        catch(e){
+            console.log(e);
+        }
     };
 
     const handleQuantityChange = (holdingId, value) => {
@@ -106,12 +128,7 @@ export default function Holdings() {
 
     const calculateProfitLoss = (holding) => {
         return (holding.stock.currentPrice - holding.averageBuyPrice) * holding.purchasedQuantity;
-    };
-
-    const calculateTotalInvestment = () => {
-        setTotalInvestment(holdings.reduce((sum, holding) => 
-            sum + (holding.averageBuyPrice * holding.purchasedQuantity), 0));
-    };    
+    };   
 
     return (
         <div className="holdings-container">
@@ -152,7 +169,7 @@ export default function Holdings() {
 
                                 return (
                                     <tr key={holding.id}>
-                                        <td>{holding.stock.name}</td>
+                                        <td className="stock-table-body" onClick={(e) => {navigate(`/stocks/${holding.stock.id}`)}}>{holding.stock.name}</td>
                                         <td>{holding.purchasedQuantity}</td>
                                         <td>{holding.averageBuyPrice.toFixed(2)}</td>
                                         <td>{holding.stock.currentPrice.toFixed(2)}</td>
