@@ -5,6 +5,7 @@
     "start:server": "cd frontend_stock_market && npm run start"
   },
   "dependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "d3": "^7.9.0"
   }
 }
