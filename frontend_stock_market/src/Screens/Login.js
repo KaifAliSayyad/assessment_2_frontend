@@ -85,18 +85,18 @@ function Login() {
                         <button type="submit">Login</button>
                     </div>
                     <div>
-                        <a>
+                        <div>
                             <Link to="/register">
                                 register
                             </Link>
-                        </a> if account doesn't exist
+                        </div> if account doesn't exist
                     </div>
                     <div>
-                        <a>
+                        <div>
                             <Link to="/forgot-password">
                                 Forgot Password ?
                             </Link>
-                        </a>
+                        </div>
                     </div>
                 </form>
             </div>

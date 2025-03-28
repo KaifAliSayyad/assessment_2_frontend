@@ -1,0 +1,45 @@
+.grid line {
+    stroke: #e0e0e0;
+    stroke-opacity: 0.7;
+    shape-rendering: crispEdges;
+}
+
+.grid path {
+    stroke-width: 0;
+}
+
+.tooltip {
+    pointer-events: none;
+    z-index: 100;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.candlestick .wick {
+    stroke-width: 1;
+}
+
+.candlestick .body {
+    stroke-width: 0;
+}
+
+.zoom-instruction {
+    user-select: none;
+}
+
+/* Improve axis appearance */
+.x-axis path,
+.y-axis path {
+    stroke: #666;
+}
+
+.x-axis text,
+.y-axis text {
+    fill: #666;
+    font-size: 11px;
+}
+
+/* Add transition for smooth updates */
+.candlestick {
+    transition: transform 50ms ease;
+}
