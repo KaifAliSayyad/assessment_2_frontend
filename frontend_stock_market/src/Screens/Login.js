@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../ReduxComps/actions';
 import { useNavigate, Link } from 'react-router-dom';
@@ -10,6 +10,15 @@ function Login() {
     const [errorMessage, setErrorMessage] = useState('');
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    //adding a useEffect hook to check if user of admin is already saved in local storage if yes then also setting it in redux
+    useEffect(() => {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            dispatch(setUser(JSON.parse(storedUser)));
+            navigate('/dashboard');
+        }
+    }, [dispatch]);
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
